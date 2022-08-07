@@ -11,7 +11,7 @@ export const useStage = (player, resetPlayer) => {
         row.map((cell) => (cell[1] === 'clear' ? [0, 'clear'] : cell))
       )
 
-      // Then draw the tetromino
+      //Draw the tetromino
 
       player.tetromino.forEach((row, y) => {
         row.forEach((value, x) => {
@@ -24,6 +24,10 @@ export const useStage = (player, resetPlayer) => {
         })
       })
 
+      // Check if piece collided and then generate new piece
+      if (player.collided) {
+        resetPlayer()
+      }
       return newStage
     }
 

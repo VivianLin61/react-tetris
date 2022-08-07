@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { createStage, LEFT, RIGHT, DOWN, UP } from '../helpers'
+import { checkCollision, createStage, LEFT, RIGHT, DOWN, UP } from '../helpers'
 //Custom Hooks
 import { usePlayer } from '../hooks/usePlayer'
 import { useStage } from '../hooks/useStage'
@@ -20,22 +20,35 @@ const Tetris = () => {
   const [dropTime, setDropTime] = useState(null)
   const [gameOver, setGameOver] = useState(false)
   const [player, updatePlayerPos, resetPlayer] = usePlayer()
-  const [stage, setStage] = useStage(player)
+  const [stage, setStage] = useStage(player, resetPlayer)
   const movePlayer = (dir) => {
-    updatePlayerPos({ x: dir, y: 0 })
+    if (!checkCollision(player, stage, { x: dir, y: 0 })) {
+      updatePlayerPos({ x: dir, y: 0 })
+    }
   }
-
   const startGame = () => {
     setStage(createStage())
     resetPlayer()
+    setGameOver(false)
+  }
+  const drop = () => {
+    if (!checkCollision(player, stage, { x: 0, y: 1 })) {
+      updatePlayerPos({ x: 0, y: 1, collided: false })
+    } else {
+      // Game Over
+      if (player.pos.y < 1) {
+        console.log('GAME OVER!!!')
+        setGameOver(true)
+        setDropTime(null)
+      }
+      updatePlayerPos({ x: 0, y: 0, collided: true })
+    }
   }
 
-  const drop = () => {
-    updatePlayerPos({ x: 0, y: 1, collided: false })
-  }
   const dropPlayer = () => {
     drop()
   }
+
   const move = ({ keyCode }) => {
     if (!gameOver) {
       if (keyCode === LEFT) {
