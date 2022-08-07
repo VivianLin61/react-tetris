@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { checkCollision, createStage, LEFT, RIGHT, DOWN, UP } from '../helpers'
 //Custom Hooks
+import { useInterval } from '../hooks/useInterval'
 import { usePlayer } from '../hooks/usePlayer'
 import { useStage } from '../hooks/useStage'
 //Components
@@ -28,6 +29,7 @@ const Tetris = () => {
   }
   const startGame = () => {
     setStage(createStage())
+    setDropTime(1000)
     resetPlayer()
     setGameOver(false)
   }
@@ -45,7 +47,18 @@ const Tetris = () => {
     }
   }
 
+  const keyUp = ({ keyCode }) => {
+    if (!gameOver) {
+      if (keyCode === 40) {
+        // When user releases DOWN key turn on interval
+        setDropTime(1000)
+      }
+    }
+  }
+
   const dropPlayer = () => {
+    // When user presses DOWN key turn off interval
+    setDropTime(null)
     drop()
   }
 
@@ -63,9 +76,18 @@ const Tetris = () => {
     }
   }
 
+  useInterval(() => {
+    drop()
+  }, dropTime)
+
   console.log('re-render')
   return (
-    <StyledTetrisWrapper role='button' tabIndex='0' onKeyDown={(e) => move(e)}>
+    <StyledTetrisWrapper
+      role='button'
+      tabIndex='0'
+      onKeyDown={(e) => move(e)}
+      onKeyUp={keyUp}
+    >
       <StyledTitle>TETRIS AI</StyledTitle>
       <StyledTetris>
         <div>
