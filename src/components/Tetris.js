@@ -19,7 +19,7 @@ import {
 const Tetris = () => {
   const [dropTime, setDropTime] = useState(null)
   const [gameOver, setGameOver] = useState(false)
-  const [player, updatePlayerPos, resetPlayer] = usePlayer()
+  const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer()
   const [stage, setStage] = useStage(player, resetPlayer)
   const movePlayer = (dir) => {
     if (!checkCollision(player, stage, { x: dir, y: 0 })) {
@@ -58,6 +58,7 @@ const Tetris = () => {
       } else if (keyCode === DOWN) {
         dropPlayer()
       } else if (keyCode === UP) {
+        playerRotate(stage, 1) //Rotate the player on the stage clockwise
       }
     }
   }
