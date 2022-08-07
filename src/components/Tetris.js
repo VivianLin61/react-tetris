@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { checkCollision, createStage, LEFT, RIGHT, DOWN, UP } from '../helpers'
 //Custom Hooks
 import { useInterval } from '../hooks/useInterval'
@@ -20,8 +20,16 @@ import {
 const Tetris = () => {
   const [dropTime, setDropTime] = useState(null)
   const [gameOver, setGameOver] = useState(false)
+  const [rows, setRows] = useState(0)
   const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer()
-  const [stage, setStage] = useStage(player, resetPlayer)
+  const [stage, setStage, rowsCleared] = useStage(player, resetPlayer)
+
+  useEffect(() => {
+    if (rowsCleared > 0) {
+      setRows((prev) => prev + rowsCleared)
+    }
+  }, [rowsCleared])
+
   const movePlayer = (dir) => {
     if (!checkCollision(player, stage, { x: dir, y: 0 })) {
       updatePlayerPos({ x: dir, y: 0 })
@@ -32,6 +40,7 @@ const Tetris = () => {
     setDropTime(1000)
     resetPlayer()
     setGameOver(false)
+    setRows(0)
   }
   const drop = () => {
     if (!checkCollision(player, stage, { x: 0, y: 1 })) {
@@ -102,7 +111,7 @@ const Tetris = () => {
             <Display gameOver={gameOver} text='Game Over' />
           ) : (
             <div>
-              <Display text='Lines' />
+              <Display text={`Lines: ${rows}`} />
             </div>
           )}
         </div>
