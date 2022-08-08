@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react'
-
 import { TETROMINOS, randomTetromino } from '../tetrominos'
 import { checkCollision, STAGE_WIDTH } from '../helpers'
 

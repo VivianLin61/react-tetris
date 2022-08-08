@@ -22,8 +22,11 @@ const Tetris = () => {
   const [gameOver, setGameOver] = useState(false)
   const [rows, setRows] = useState(0)
   const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer()
-  const [stage, setStage, rowsCleared] = useStage(player, resetPlayer)
-
+  const [stage, setStage, rowsCleared, dropPosition] = useStage(
+    player,
+    resetPlayer
+  )
+  const [spacePressed, setSpacePressed] = useState(false)
   useEffect(() => {
     if (rowsCleared > 0) {
       setRows((prev) => prev + rowsCleared)
@@ -62,6 +65,9 @@ const Tetris = () => {
         // When user releases DOWN key turn on interval
         setDropTime(1000)
       }
+      if (keyCode === 32) {
+        setSpacePressed(false)
+      }
     }
   }
 
@@ -71,16 +77,26 @@ const Tetris = () => {
     drop()
   }
 
-  const move = ({ keyCode }) => {
+  const hardDrop = () => {
+    const dropHeight = dropPosition - player.pos.y
+    updatePlayerPos({ x: 0, y: dropHeight, collided: true })
+  }
+  const move = (e) => {
     if (!gameOver) {
-      if (keyCode === LEFT) {
+      if (e.keyCode === LEFT) {
         movePlayer(-1)
-      } else if (keyCode === RIGHT) {
+      } else if (e.keyCode === RIGHT) {
         movePlayer(1)
-      } else if (keyCode === DOWN) {
+      } else if (e.keyCode === DOWN) {
         dropPlayer()
-      } else if (keyCode === UP) {
+      } else if (e.keyCode === UP) {
         playerRotate(stage, 1) //Rotate the player on the stage clockwise
+      } else if (e.keyCode === 32) {
+        e.preventDefault()
+        if (spacePressed === false) {
+          setSpacePressed(true)
+          hardDrop()
+        }
       }
     }
   }
@@ -89,7 +105,7 @@ const Tetris = () => {
     drop()
   }, dropTime)
 
-  console.log('re-render')
+  // console.log('re-render')
   return (
     <StyledTetrisWrapper
       role='button'
