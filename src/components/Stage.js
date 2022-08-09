@@ -10,7 +10,7 @@ const Stage = ({ stage, type }) => {
         <StyledStage type={type} width={stage[0].length} height={stage.length}>
           {stage.map((row) =>
             row.map((cell, x) => {
-              return <Cell key={x} type={cell[0]} />
+              return <Cell key={x} type={cell[0]} ghost={cell[1] === 'ghost'} />
             })
           )}
         </StyledStage>

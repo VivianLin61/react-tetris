@@ -30,7 +30,12 @@ export const checkCollision = (
       }
       if (nextY < 0) continue
 
-      if (stage !== undefined && stage[nextY][nextX][1] !== 'clear') return true
+      if (
+        stage !== undefined &&
+        stage[nextY][nextX][1] !== 'clear' &&
+        stage[nextY][nextX][1] !== 'ghost'
+      )
+        return true
     }
   }
   // 5. If everything above is false

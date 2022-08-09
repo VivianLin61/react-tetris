@@ -35,9 +35,20 @@ export const useStage = (player, resetPlayer, nextPiece) => {
     const updateStage = (prevStage) => {
       // First flush the stage
       const newStage = prevStage.map((row) =>
-        row.map((cell) => (cell[1] === 'clear' ? [0, 'clear'] : cell))
+        row.map((cell) =>
+          cell[1] === 'clear' || cell[1] === 'ghost' ? [0, 'clear'] : cell
+        )
       )
-
+      let drop = calculateDropPosition(newStage)
+      setDropPosition(drop)
+      // Draw ghost tetromino
+      player.tetromino.forEach((row, y) => {
+        row.forEach((value, x) => {
+          if (value !== 0) {
+            newStage[y + drop][x + player.pos.x] = [value, 'ghost']
+          }
+        })
+      })
       //Draw the tetromino
       player.tetromino.forEach((row, y) => {
         row.forEach((value, x) => {
@@ -49,7 +60,6 @@ export const useStage = (player, resetPlayer, nextPiece) => {
           }
         })
       })
-      setDropPosition(calculateDropPosition(newStage))
 
       // Check if piece collided and then generate new piece
       if (player.collided) {
