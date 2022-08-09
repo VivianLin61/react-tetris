@@ -26,7 +26,6 @@ export const checkCollision = (
       let nextX = currentX + x + moveX
       let nextY = currentY + y + moveY
       if (nextX < 0 || nextX >= STAGE_WIDTH || nextY >= STAGE_HEIGHT) {
-        console.log('TRUE')
         return true
       }
       if (nextY < 0) continue

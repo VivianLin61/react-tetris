@@ -21,12 +21,45 @@ const Tetris = () => {
   const [dropTime, setDropTime] = useState(null)
   const [gameOver, setGameOver] = useState(false)
   const [rows, setRows] = useState(0)
-  const [player, updatePlayerPos, resetPlayer, playerRotate] = usePlayer()
+
+  const [
+    player,
+    updatePlayerPos,
+    resetPlayer,
+    playerRotate,
+    nextPiece,
+    holdPiece,
+    updatePlayerPiece,
+  ] = usePlayer()
+
   const [stage, setStage, rowsCleared, dropPosition] = useStage(
     player,
     resetPlayer
   )
+  const [nextStage, setNextStage] = useState(createStage(4, 4))
+  const [holdStage, setHoldStage] = useState(createStage(4, 4))
   const [spacePressed, setSpacePressed] = useState(false)
+  
+  const updateSideStage = (prevHoldStage, piece) => {
+    const newStage = prevHoldStage.map((row) => row.map((cell) => [0, 'clear']))
+    piece.forEach((row, y) => {
+      row.forEach((value, x) => {
+        if (value !== 0) {
+          newStage[y][x] = [value]
+        }
+      })
+    })
+
+    return newStage
+  }
+  useEffect(() => {
+    setHoldStage((prev) => updateSideStage(prev, holdPiece[0]))
+  }, [holdPiece, setHoldStage])
+
+  useEffect(() => {
+    setNextStage((prev) => updateSideStage(prev, nextPiece[0]))
+  }, [nextPiece, setNextStage])
+
   useEffect(() => {
     if (rowsCleared > 0) {
       setRows((prev) => prev + rowsCleared)
@@ -40,6 +73,7 @@ const Tetris = () => {
   }
   const startGame = () => {
     setStage(createStage())
+    setNextStage(createStage(4, 4))
     setDropTime(1000)
     resetPlayer()
     setGameOver(false)
@@ -81,6 +115,7 @@ const Tetris = () => {
     const dropHeight = dropPosition - player.pos.y
     updatePlayerPos({ x: 0, y: dropHeight, collided: true })
   }
+
   const move = (e) => {
     if (!gameOver) {
       if (e.keyCode === LEFT) {
@@ -97,6 +132,8 @@ const Tetris = () => {
           setSpacePressed(true)
           hardDrop()
         }
+      } else if (e.keyCode === 67) {
+        updatePlayerPiece()
       }
     }
   }
@@ -117,12 +154,12 @@ const Tetris = () => {
       <StyledTetris>
         <div>
           <StyledText>HOLD</StyledText>
-          <Stage stage={createStage(4, 4)} />
+          <Stage stage={holdStage} />
         </div>
         <Stage stage={stage} type={'main'} />
         <div>
           <StyledText>NEXT</StyledText>
-          <Stage stage={createStage(4, 4)} />
+          <Stage stage={nextStage} />
           {gameOver ? (
             <Display gameOver={gameOver} text='Game Over' />
           ) : (

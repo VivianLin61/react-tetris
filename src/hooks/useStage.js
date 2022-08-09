@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createStage } from '../helpers'
 import { checkCollision, STAGE_HEIGHT } from '../helpers'
-export const useStage = (player, resetPlayer, setGhost) => {
+export const useStage = (player, resetPlayer, nextPiece) => {
   const [stage, setStage] = useState(createStage())
   const [rowsCleared, setRowsCleared] = useState(0)
   const [dropPosition, setDropPosition] = useState(0)

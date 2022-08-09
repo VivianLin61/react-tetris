@@ -9,6 +9,8 @@ export const usePlayer = () => {
     collided: false,
   })
 
+  const [nextPiece, setNextPiece] = useState([TETROMINOS[0].shape])
+  const [holdPiece, setHoldPiece] = useState([TETROMINOS[0].shape])
   const rotate = (matrix, dir) => {
     // Make the rows to become cols (transpose)
     const rotatedTetro = matrix.map((_, index) =>
@@ -46,14 +48,38 @@ export const usePlayer = () => {
     }))
   }
 
+  const updatePlayerPiece = () => {
+    const currentTetromino = player.tetromino
+    const tetromino = holdPiece[0]
+    setHoldPiece([currentTetromino]) //Save to hold stage
+    if (tetromino.length !== 1) {
+      setPlayer((prev) => ({
+        ...prev,
+        tetromino: tetromino,
+      }))
+    } else {
+      resetPlayer()
+    }
+  }
+
   //Generate new tetromino at the top of the stage
   const resetPlayer = useCallback(() => {
+    const tetromino = nextPiece[0]
     setPlayer({
       pos: { x: STAGE_WIDTH / 2 - 2, y: 0 },
-      tetromino: randomTetromino().shape,
+      tetromino: tetromino.length === 1 ? randomTetromino().shape : tetromino,
       collided: false,
     })
-  }, [])
+    setNextPiece([randomTetromino().shape])
+  }, [nextPiece])
 
-  return [player, updatePlayerPos, resetPlayer, playerRotate]
+  return [
+    player,
+    updatePlayerPos,
+    resetPlayer,
+    playerRotate,
+    nextPiece,
+    holdPiece,
+    updatePlayerPiece,
+  ]
 }
