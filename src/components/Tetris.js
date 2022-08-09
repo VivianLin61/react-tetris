@@ -39,7 +39,7 @@ const Tetris = () => {
   const [nextStage, setNextStage] = useState(createStage(4, 4))
   const [holdStage, setHoldStage] = useState(createStage(4, 4))
   const [spacePressed, setSpacePressed] = useState(false)
-  
+
   const updateSideStage = (prevHoldStage, piece) => {
     const newStage = prevHoldStage.map((row) => row.map((cell) => [0, 'clear']))
     piece.forEach((row, y) => {
@@ -150,7 +150,7 @@ const Tetris = () => {
       onKeyDown={(e) => move(e)}
       onKeyUp={keyUp}
     >
-      <StyledTitle>TETRIS AI</StyledTitle>
+      <StyledTitle>TETRIS</StyledTitle>
       <StyledTetris>
         <div>
           <StyledText>HOLD</StyledText>
@@ -172,10 +172,10 @@ const Tetris = () => {
       <ButtonsWrapper>
         <Button type={'Play'} size={'large'} callback={startGame} />
       </ButtonsWrapper>
-      <ButtonsWrapper>
+      {/* <ButtonsWrapper>
         <Button type={'Train AI'} />
         <Button type={'AI Play'} />
-      </ButtonsWrapper>
+      </ButtonsWrapper> */}
     </StyledTetrisWrapper>
   )
 }

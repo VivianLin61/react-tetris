@@ -3,7 +3,6 @@ import Tetris from './components/Tetris'
 import { ThemeProvider } from 'styled-components'
 
 const theme = {
-  backgroundColor: '#080d12',
   primaryColor: '#172E4D',
   textColor: '#F5E399',
 }

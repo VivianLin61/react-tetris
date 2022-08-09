@@ -7,14 +7,14 @@ export const ButtonsWrapper = styled.div`
 `
 const StyledButton = styled.button`
   box-sizing: border-box;
-  margin: 0 10px 20px 10px;
-  padding: 16px;
+  margin: 0 10px 16px 10px;
+  padding: 14px;
   min-height: 30px;
-  width: ${(props) => (props.size === 'large' ? '300px' : '150px')};
+  width: ${(props) => (props.size === 'large' ? '240px' : '110px')};
   border-radius: 10px;
   border: none;
   color: white;
-  font-size: 1.2rem;
+  font-size: 1rem;
   background: ${(props) => props.theme.primaryColor};
   outline: none;
   cursor: pointer;
