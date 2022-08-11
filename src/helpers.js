@@ -29,7 +29,6 @@ export const checkCollision = (
         return true
       }
       if (nextY < 0) continue
-
       if (
         stage !== undefined &&
         stage[nextY][nextX][1] !== 'clear' &&
@@ -40,4 +39,37 @@ export const checkCollision = (
   }
   // 5. If everything above is false
   return false
+}
+
+export const calculateDropPosition = (newStage, currPlayer) => {
+  let ghostY = currPlayer.pos.y
+  while (
+    !checkCollision(currPlayer, newStage, { x: 0, y: 1 }, ghostY) &&
+    ghostY < STAGE_HEIGHT
+  ) {
+    ghostY += 1
+  }
+  return ghostY
+}
+
+export const copyMatrix = (matrix) => {
+  let newArray = []
+  for (var i = 0; i < matrix.length; i++) {
+    newArray[i] = matrix[i].slice()
+  }
+  return newArray
+}
+
+export const getRandomInt = (min, max) => {
+  min = Math.ceil(min)
+  max = Math.floor(max)
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+export const rotate = (matrix, dir) => {
+  // Make the rows to become cols (transpose)
+  const rotatedTetro = matrix.map((_, index) => matrix.map((col) => col[index]))
+  // Reverse each row to get a rotated matrix
+  if (dir > 0) return rotatedTetro.map((row) => row.reverse())
+  return rotatedTetro.reverse()
 }

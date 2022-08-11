@@ -21,24 +21,46 @@ const Tetris = () => {
   const [dropTime, setDropTime] = useState(null)
   const [gameOver, setGameOver] = useState(false)
   const [rows, setRows] = useState(0)
+  const [ai, setAI] = useState(false)
 
   const [
     player,
+    setPlayer,
     updatePlayerPos,
     resetPlayer,
     playerRotate,
     nextPiece,
     holdPiece,
     updatePlayerPiece,
-  ] = usePlayer()
+    bestPlayer,
+  ] = usePlayer(ai)
 
   const [stage, setStage, rowsCleared, dropPosition] = useStage(
     player,
-    resetPlayer
+    resetPlayer,
+    bestPlayer,
+    ai
   )
+
   const [nextStage, setNextStage] = useState(createStage(4, 4))
   const [holdStage, setHoldStage] = useState(createStage(4, 4))
   const [spacePressed, setSpacePressed] = useState(false)
+  const setUpGame = () => {
+    setStage(createStage())
+    setNextStage(createStage(4, 4))
+    setDropTime(1000)
+    setGameOver(false)
+    setRows(0)
+  }
+  const startGame = () => {
+    setUpGame()
+    resetPlayer()
+  }
+  const startAI = () => {
+    setUpGame()
+    setAI(true)
+    resetPlayer(stage, true)
+  }
 
   const updateSideStage = (prevHoldStage, piece) => {
     const newStage = prevHoldStage.map((row) => row.map((cell) => [0, 'clear']))
@@ -71,14 +93,7 @@ const Tetris = () => {
       updatePlayerPos({ x: dir, y: 0 })
     }
   }
-  const startGame = () => {
-    setStage(createStage())
-    setNextStage(createStage(4, 4))
-    setDropTime(1000)
-    resetPlayer()
-    setGameOver(false)
-    setRows(0)
-  }
+
   const drop = () => {
     if (!checkCollision(player, stage, { x: 0, y: 1 })) {
       updatePlayerPos({ x: 0, y: 1, collided: false })
@@ -125,7 +140,7 @@ const Tetris = () => {
       } else if (e.keyCode === DOWN) {
         dropPlayer()
       } else if (e.keyCode === UP) {
-        playerRotate(stage, 1) //Rotate the player on the stage clockwise
+        setPlayer(playerRotate(player, stage, 1)) //Rotate the player on the stage clockwise
       } else if (e.keyCode === 32) {
         e.preventDefault()
         if (spacePressed === false) {
@@ -139,7 +154,9 @@ const Tetris = () => {
   }
 
   useInterval(() => {
-    drop()
+    if (!gameOver) {
+      drop()
+    }
   }, dropTime)
 
   // console.log('re-render')
@@ -172,10 +189,10 @@ const Tetris = () => {
       <ButtonsWrapper>
         <Button type={'Play'} size={'large'} callback={startGame} />
       </ButtonsWrapper>
-      {/* <ButtonsWrapper>
+      <ButtonsWrapper>
         <Button type={'Train AI'} />
-        <Button type={'AI Play'} />
-      </ButtonsWrapper> */}
+        <Button type={'AI Play'} callback={startAI} />
+      </ButtonsWrapper>
     </StyledTetrisWrapper>
   )
 }

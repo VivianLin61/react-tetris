@@ -1,24 +1,13 @@
 import { useState, useEffect } from 'react'
 import { createStage } from '../helpers'
-import { checkCollision, STAGE_HEIGHT } from '../helpers'
-export const useStage = (player, resetPlayer, nextPiece) => {
+import { calculateDropPosition } from '../helpers'
+export const useStage = (player, resetPlayer, bestPlayer, ai) => {
   const [stage, setStage] = useState(createStage())
   const [rowsCleared, setRowsCleared] = useState(0)
   const [dropPosition, setDropPosition] = useState(0)
 
   useEffect(() => {
     setRowsCleared(0)
-    const calculateDropPosition = (newStage) => {
-      let ghostY = player.pos.y
-      while (
-        !checkCollision(player, newStage, { x: 0, y: 1 }, ghostY) &&
-        ghostY < STAGE_HEIGHT
-      ) {
-        ghostY += 1
-      }
-      return ghostY
-    }
-
     const clearRows = (newStage) =>
       newStage.reduce((ack, row) => {
         if (row.findIndex((cell) => cell[0] === 0) === -1) {
@@ -39,7 +28,7 @@ export const useStage = (player, resetPlayer, nextPiece) => {
           cell[1] === 'clear' || cell[1] === 'ghost' ? [0, 'clear'] : cell
         )
       )
-      let drop = calculateDropPosition(newStage)
+      let drop = calculateDropPosition(newStage, player)
       setDropPosition(drop)
       // Draw ghost tetromino
       player.tetromino.forEach((row, y) => {
@@ -63,7 +52,11 @@ export const useStage = (player, resetPlayer, nextPiece) => {
 
       // Check if piece collided and then generate new piece
       if (player.collided) {
-        resetPlayer()
+        if (ai) {
+          resetPlayer(newStage, ai)
+        } else {
+          resetPlayer()
+        }
         return clearRows(newStage)
       }
       return newStage
@@ -71,6 +64,7 @@ export const useStage = (player, resetPlayer, nextPiece) => {
 
     setStage((prev) => updateStage(prev))
   }, [
+    ai,
     player,
     player.collided,
     player.pos.x,
