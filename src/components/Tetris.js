@@ -22,7 +22,13 @@ const Tetris = () => {
   const [gameOver, setGameOver] = useState(false)
   const [rows, setRows] = useState(0)
   const [ai, setAI] = useState(false)
-
+  const [weights, setWeights] = useState({
+    a: 0,
+    b: 0,
+    c: 0,
+    d: 0,
+    e: 0,
+  })
   const [
     player,
     setPlayer,
@@ -33,7 +39,7 @@ const Tetris = () => {
     holdPiece,
     updatePlayerPiece,
     bestPlayer,
-  ] = usePlayer(ai)
+  ] = usePlayer(weights)
 
   const [stage, setStage, rowsCleared, dropPosition] = useStage(
     player,
@@ -45,6 +51,7 @@ const Tetris = () => {
   const [nextStage, setNextStage] = useState(createStage(4, 4))
   const [holdStage, setHoldStage] = useState(createStage(4, 4))
   const [spacePressed, setSpacePressed] = useState(false)
+
   const setUpGame = () => {
     setStage(createStage())
     setNextStage(createStage(4, 4))
@@ -59,6 +66,13 @@ const Tetris = () => {
   const startAI = () => {
     setUpGame()
     setAI(true)
+    setWeights({
+      a: 0.012986105043601821,
+      b: -0.33099889329580323,
+      c: 0.5446471620000896,
+      d: -0.25120763453283845,
+      e: -0.13253702980064244,
+    })
     resetPlayer(stage, true)
   }
 

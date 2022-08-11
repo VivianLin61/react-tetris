@@ -39,6 +39,7 @@ export const useStage = (player, resetPlayer, bestPlayer, ai) => {
         })
       })
       //Draw the tetromino
+
       player.tetromino.forEach((row, y) => {
         row.forEach((value, x) => {
           if (value !== 0) {
