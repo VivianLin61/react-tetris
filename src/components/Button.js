@@ -3,7 +3,22 @@ import styled from 'styled-components'
 
 export const ButtonsWrapper = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: ${(props) => props.position};
+`
+export const IconButton = styled.div`
+  display: flex;
+  align-items: center;
+  margin: 0 0px 16px 20px;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  background: ${(props) => props.theme.primaryColor};
+  outline: none;
+  cursor: pointer;
+  color: ${(props) => props.theme.textColor};
+  font-family: 'Montserrat', sans-serif;
 `
 const StyledButton = styled.button`
   box-sizing: border-box;

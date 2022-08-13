@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 export const StyledStage = styled.div`
-  padding: 20px 20px;
+  padding: 0px 20px 20px 20px;
   border-radius: 20px;
   display: grid;
   grid-template-rows: repeat(
@@ -15,6 +15,5 @@ export const StyledStage = styled.div`
   grid-template-columns: repeat(${(props) => props.width}, 1fr);
   grid-gap: 1px;
   width: ${(props) => (props.type === 'main' ? '240px' : '96px')};
-  margin: 0px 20px;
   background: ${(props) => props.theme.backgroundColor};
 `

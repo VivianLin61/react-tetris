@@ -17,7 +17,8 @@ export const StyledTetris = styled.div`
 `
 
 export const StyledText = styled.div`
-  margin-left: 40px;
+  margin-left: 20px;
+  margin-bottom: 20px;
   font-size: 1.2em;
   color: white;
 `
@@ -27,4 +28,8 @@ export const StyledTitle = styled.h1`
   color: ${(props) => props.theme.textColor};
   margin-top: 16px;
   margin-bottom: 0px;
+`
+
+export const SideWrapper = styled.div`
+  width: 300px;
 `

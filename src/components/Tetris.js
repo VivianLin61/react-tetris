@@ -21,16 +21,17 @@ import { usePlayer } from '../hooks/usePlayer'
 import { useStage } from '../hooks/useStage'
 
 import Stage from './Stage'
-import Display from './Display'
+import { Display, DisplayData } from './Display'
 import Button from './Button'
-import DisplayData from './DisplayData'
+import { VscDebugRestart, VscDebugPause } from 'react-icons/vsc'
 //Styled Components
-import { ButtonsWrapper } from './Button'
+import { ButtonsWrapper, IconButton } from './Button'
 import {
   StyledTetrisWrapper,
   StyledTetris,
   StyledText,
   StyledTitle,
+  SideWrapper,
 } from './styles/StyledTetris'
 
 const Tetris = () => {
@@ -54,14 +55,12 @@ const Tetris = () => {
     nextPiece,
     holdPiece,
     updatePlayerPiece,
-    bestPlayer,
   ] = usePlayer(weights, setGameOver)
 
   const [gameScore, setGameScore] = useState(0)
   const [stage, setStage, rowsCleared, dropPosition] = useStage(
     player,
     resetPlayer,
-    bestPlayer,
     ai,
     setGameScore
   )
@@ -69,7 +68,7 @@ const Tetris = () => {
   const [nextStage, setNextStage] = useState(createStage(4, 4))
   const [holdStage, setHoldStage] = useState(createStage(4, 4))
   const [spacePressed, setSpacePressed] = useState(false)
-
+  const [paused, setPaused] = useState(false)
   const [aiTrain, setAITrain] = useState(false)
   const [moves, setMoves] = useState(0)
   const [gameNum, setGameNum] = useState(1)
@@ -277,6 +276,18 @@ const Tetris = () => {
     }
   }
 
+  const pausePlayer = () => {
+    setPaused((prev) => !prev)
+    //toggle
+  }
+  useEffect(() => {
+    if (paused) {
+      setDropTime(null)
+    } else {
+      let dropTime = ai ? AI_DROP_TIME : GAME_DROP_TIME
+      setDropTime(dropTime)
+    }
+  }, [ai, paused])
   const dropPlayer = () => {
     // When user presses DOWN key turn off interval
     setDropTime(null)
@@ -326,44 +337,62 @@ const Tetris = () => {
     >
       <StyledTitle>TETRIS</StyledTitle>
       <StyledTetris>
-        <div>
-          <StyledText>HOLD</StyledText>
-          <Stage stage={holdStage} />
-        </div>
+        <SideWrapper>
+          {!ai ? (
+            <>
+              <div style={{ float: 'right' }}>
+                <StyledText>HOLD</StyledText>
+                <Stage stage={holdStage} />
+              </div>
+            </>
+          ) : (
+            <>
+              <DisplayData
+                data={{
+                  rows,
+                  gameScore,
+                  generation,
+                  maxFitness,
+                  maxLines,
+                  gameNum,
+                  moves,
+                  POPSIZE,
+                  bestWeights,
+                  weights,
+                }}
+              ></DisplayData>
+            </>
+          )}
+        </SideWrapper>
         <Stage stage={stage} type={'main'} />
-        <div>
+        <SideWrapper>
           <StyledText>NEXT</StyledText>
           <Stage stage={nextStage} />
-          {gameOver ? (
-            <Display gameOver={gameOver} text='Game Over' />
-          ) : (
-            <div>
-              {!ai ? (
-                <Display text={`Lines: ${rows}`} />
-              ) : (
-                <DisplayData
-                  data={{
-                    rows,
-                    gameScore,
-                    generation,
-                    maxFitness,
-                    maxLines,
-                    gameNum,
-                    moves,
-                    POPSIZE,
-                    bestWeights,
-                    weights,
-                  }}
-                ></DisplayData>
-              )}
-            </div>
+          {!ai && (
+            <>
+              <ButtonsWrapper position='left'>
+                <IconButton type={'Play'} callback={trainAI}>
+                  <VscDebugRestart />
+                </IconButton>
+                <IconButton type={'AI Play'} callback={startAI}>
+                  <VscDebugPause />
+                </IconButton>
+              </ButtonsWrapper>
+            </>
           )}
-        </div>
+          <>
+            {gameOver && !ai ? (
+              <Display gameOver={gameOver} text='Game Over' />
+            ) : (
+              <div>{!ai ? <Display text={`Lines: ${rows}`} /> : <></>}</div>
+            )}
+          </>
+        </SideWrapper>
       </StyledTetris>
-      <ButtonsWrapper>
+      <ButtonsWrapper position={'center'}>
         <Button type={'Play'} size={'large'} callback={startGame} />
       </ButtonsWrapper>
-      <ButtonsWrapper>
+      <ButtonsWrapper position={'center'}>
         <Button type={'Train AI'} callback={trainAI} />
         <Button type={'AI Play'} callback={startAI} />
       </ButtonsWrapper>

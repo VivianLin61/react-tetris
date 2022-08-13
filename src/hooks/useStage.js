@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { createStage } from '../helpers'
 import { calculateDropPosition, STAGE_HEIGHT, STAGE_WIDTH } from '../helpers'
-export const useStage = (player, resetPlayer, bestPlayer, ai) => {
+export const useStage = (player, resetPlayer, ai) => {
   const [stage, setStage] = useState(createStage())
   const [rowsCleared, setRowsCleared] = useState(0)
   const [dropPosition, setDropPosition] = useState(0)
