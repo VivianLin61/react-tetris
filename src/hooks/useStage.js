@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { createStage } from '../helpers'
-import { calculateDropPosition } from '../helpers'
+import { calculateDropPosition, STAGE_HEIGHT, STAGE_WIDTH } from '../helpers'
 export const useStage = (player, resetPlayer, bestPlayer, ai) => {
   const [stage, setStage] = useState(createStage())
   const [rowsCleared, setRowsCleared] = useState(0)
@@ -31,34 +31,49 @@ export const useStage = (player, resetPlayer, bestPlayer, ai) => {
       let drop = calculateDropPosition(newStage, player)
       setDropPosition(drop)
       // Draw ghost tetromino
-      player.tetromino.forEach((row, y) => {
-        row.forEach((value, x) => {
-          if (value !== 0) {
-            newStage[y + drop][x + player.pos.x] = [value, 'ghost']
-          }
+      if (newStage && player) {
+        player.tetromino.forEach((row, y) => {
+          row.forEach((value, x) => {
+            if (value !== 0) {
+              let yVal = y + drop
+              let xVal = x + player.pos.x
+              if (
+                yVal >= 0 &&
+                yVal < STAGE_HEIGHT &&
+                xVal >= 0 &&
+                xVal < STAGE_WIDTH
+              ) {
+                newStage[yVal][xVal] = [value, 'ghost']
+              }
+            }
+          })
         })
-      })
-      //Draw the tetromino
-
-      player.tetromino.forEach((row, y) => {
-        row.forEach((value, x) => {
-          if (value !== 0) {
-            newStage[y + player.pos.y][x + player.pos.x] = [
-              value,
-              `${player.collided ? 'merged' : 'clear'}`,
-            ]
-          }
+        //Draw the tetromino
+        player.tetromino.forEach((row, y) => {
+          row.forEach((value, x) => {
+            if (value !== 0 && newStage !== undefined && player !== undefined) {
+              let yVal = y + drop
+              let xVal = x + player.pos.x
+              if (
+                yVal >= 0 &&
+                yVal < STAGE_HEIGHT &&
+                xVal >= 0 &&
+                xVal < STAGE_WIDTH
+              ) {
+                newStage[y + player.pos.y][x + player.pos.x] = [
+                  value,
+                  `${player.collided ? 'merged' : 'clear'}`,
+                ]
+              }
+            }
+          })
         })
-      })
 
-      // Check if piece collided and then generate new piece
-      if (player.collided) {
-        if (ai) {
+        // Check if piece collided and then generate new piece
+        if (player.collided) {
           resetPlayer(newStage, ai)
-        } else {
-          resetPlayer()
+          return clearRows(newStage)
         }
-        return clearRows(newStage)
       }
       return newStage
     }

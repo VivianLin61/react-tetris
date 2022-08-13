@@ -10,7 +10,7 @@ import {
   rotate,
 } from '../helpers'
 
-export const usePlayer = (weights) => {
+export const usePlayer = (weights, setGameOver) => {
   const [player, setPlayer] = useState({
     pos: { x: 0, y: 0 },
     tetromino: TETROMINOS[0].shape,
@@ -27,9 +27,9 @@ export const usePlayer = (weights) => {
       rotation: 0,
       translation: 0,
     }
-
+    //all positions is not being checked corrently
     for (var rotation = 0; rotation < 4; rotation++) {
-      for (var translation = 0; translation < 9; translation++) {
+      for (var translation = -1; translation < 9; translation++) {
         let features = action(currPlayer, stage, rotation, translation)
         let score =
           features.height * weights.a +
@@ -47,9 +47,8 @@ export const usePlayer = (weights) => {
       }
     }
 
-    if (illegalMoves === 36) {
-      console.log()
-      // endGame()
+    if (illegalMoves === 40) {
+      setGameOver(true)
       return
     }
     //rotation times
@@ -74,20 +73,33 @@ export const usePlayer = (weights) => {
       //Draw merged block on cloned stage
       let clonedDropPosition = calculateDropPosition(clonedStage, clonedPlayer)
       const drop = clonedDropPosition - clonedPlayer.pos.y
-      clonedPlayer.tetromino.forEach((row, y) => {
-        row.forEach((value, x) => {
-          if (value !== 0) {
-            newClonedStage[y + drop][x + player.pos.x] = [value, 'merged']
-          }
-        })
-      })
-      clonedPlayer.pos.y = clonedDropPosition
 
-      return calculateScore(newClonedStage, clonedPlayer)
+      if (!checkCollision(clonedPlayer, clonedStage, { x: 0, y: drop })) {
+        clonedPlayer.tetromino.forEach((row, y) => {
+          row.forEach((value, x) => {
+            if (value !== 0 && newClonedStage !== undefined) {
+              newClonedStage[y + drop][x + clonedPlayer.pos.x] = [
+                value,
+                'merged',
+              ]
+            }
+          })
+        })
+
+        clonedPlayer.pos.y = clonedDropPosition
+        //loop through cloned stage and print it
+
+        let features = calculateScore(newClonedStage, clonedPlayer)
+
+        return features
+      }
     }
     return Number.NEGATIVE_INFINITY
   }
   const calculateScore = (newClonedStage, clonedPlayer) => {
+    if (newClonedStage === undefined) {
+      return Number.NEGATIVE_INFINITY
+    }
     let height = 0
     let rowsArr = newClonedStage.reduce(
       (a, row) => a.concat(row.filter((col) => col[0] !== 0).length),
@@ -131,7 +143,7 @@ export const usePlayer = (weights) => {
     for (let r = 0; r < STAGE_HEIGHT; r++) {
       let filled = 0
       for (let c = 0; c < STAGE_WIDTH; c++) {
-        if (newClonedStage[r][c][0] !== 0) {
+        if (newClonedStage !== undefined && newClonedStage[r][c][0] !== 0) {
           filled++
         }
       }
@@ -234,7 +246,7 @@ export const usePlayer = (weights) => {
 
   //Generate new tetromino at the top of the stage
   const resetPlayer = useCallback(
-    (stage, ai, currPlayer) => {
+    (stage, ai) => {
       const tetromino =
         nextPiece[0].length === 1 ? randomTetromino().shape : nextPiece[0]
       let rotation = 0
@@ -244,19 +256,19 @@ export const usePlayer = (weights) => {
         collided: false,
       }
 
-      if (typeof ai !== 'undefined') {
+      if (ai) {
         let move = decisionFunction(stage, newPlayer) //find best move for newplayer
-        newPlayer.pos.x = move.translation
+        if (!move) return
         rotation = move.rotation
-
         //Apply rotation
         for (let i = 0; i < rotation; i++) {
           newPlayer = playerRotate(newPlayer, stage, 1)
         }
+
+        newPlayer.pos.x = move.translation
       } else {
         newPlayer.pos.x = STAGE_WIDTH / 2 - 1
       }
-
       setPlayer(newPlayer)
       setNextPiece([randomTetromino().shape])
     },

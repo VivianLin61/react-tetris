@@ -8,3 +8,9 @@ export const StyledCell = styled.div`
   border: ${(props) => (props.ghost ? '2px solid' : '')};
   border-color: rgba(${(props) => props.color}, 0.8);
 `
+
+export const HiddenCell = styled.div`
+  width: auto;
+  border-radius: 6px;
+  margin: 0.5px;
+`

@@ -1,9 +1,12 @@
 export const STAGE_WIDTH = 10
-export const STAGE_HEIGHT = 20
+export const STAGE_HEIGHT = 21
 export const LEFT = 37
 export const RIGHT = 39
 export const DOWN = 40
 export const UP = 38
+export const POPSIZE = 50
+export const GAME_DROP_TIME = 1000
+export const AI_DROP_TIME = 25
 export const createStage = (height, width) =>
   Array.from(Array(height ? height : STAGE_HEIGHT), () =>
     new Array(width ? width : STAGE_WIDTH).fill([0, 'clear'])
@@ -37,7 +40,7 @@ export const checkCollision = (
         return true
     }
   }
-  // 5. If everything above is false
+  // If everything above is false
   return false
 }
 
@@ -46,9 +49,8 @@ export const calculateDropPosition = (newStage, currPlayer) => {
   while (
     !checkCollision(currPlayer, newStage, { x: 0, y: 1 }, ghostY) &&
     ghostY < STAGE_HEIGHT
-  ) {
+  )
     ghostY += 1
-  }
   return ghostY
 }
 
@@ -60,16 +62,98 @@ export const copyMatrix = (matrix) => {
   return newArray
 }
 
-export const getRandomInt = (min, max) => {
-  min = Math.ceil(min)
-  max = Math.floor(max)
-  return Math.floor(Math.random() * (max - min + 1)) + min
-}
-
 export const rotate = (matrix, dir) => {
   // Make the rows to become cols (transpose)
   const rotatedTetro = matrix.map((_, index) => matrix.map((col) => col[index]))
   // Reverse each row to get a rotated matrix
   if (dir > 0) return rotatedTetro.map((row) => row.reverse())
   return rotatedTetro.reverse()
+}
+
+//Genetic Algorithm Helpers
+
+export const createGames = () => {
+  let games = []
+  for (var i = 0; i < POPSIZE; i++) {
+    let newGame = createGame()
+    games[i] = newGame
+  }
+  return games
+}
+
+export const pickOne = (list) => {
+  var index = 0
+  var r = Math.random() // between 0 and 1
+
+  while (r > 0) {
+    if (index === list.length) {
+      return list[Math.floor(Math.random() * list.length)]
+    }
+    r = r - list[index].prob
+    index++
+  }
+  index--
+
+  return list[index]
+}
+
+let mutation_rate = 0.05
+let mutation_multiplier = 0.4
+let alpha_multiplier = 0.7
+let beta_multiplier = 0.3
+//DNA Functions
+export const crossover = (partner, pA, pB) => {
+  //  child will have most of the genes from the parent with the better fitness.
+  //if A has a larger fitness it's genes will be close to A.
+  let alpha = pA.dna
+  let beta = partner //dna
+  if (pA.fitness < pB.fitness) {
+    alpha = partner
+    beta = pA.dna
+  }
+  var newgenes = {
+    a: alpha.a * alpha_multiplier + beta.a * beta_multiplier,
+    b: alpha.b * alpha_multiplier + beta.b * beta_multiplier,
+    c: alpha.c * alpha_multiplier + beta.c * beta_multiplier,
+    d: alpha.d * alpha_multiplier + beta.d * beta_multiplier,
+    e: alpha.e * alpha_multiplier + beta.e * beta_multiplier,
+  }
+  return newgenes
+}
+
+export const mutation = (child) => {
+  if (Math.random() < mutation_rate) {
+    child.a = child.a + Math.random() * mutation_multiplier
+  }
+  if (Math.random() < mutation_rate) {
+    child.b = child.b + Math.random() * mutation_multiplier
+  }
+  if (Math.random() < mutation_rate) {
+    child.c = child.c + Math.random() * mutation_multiplier
+  }
+  if (Math.random() < mutation_rate) {
+    child.d = child.d + Math.random() * mutation_multiplier
+  }
+  if (Math.random() < mutation_rate) {
+    child.e = child.e + Math.random() * mutation_multiplier
+  }
+  return child
+}
+export const createGame = (dna) => {
+  let newGame = {
+    lines: 0,
+    fitness: 0,
+    dna: dna
+      ? dna
+      : {
+          a: Math.random() - 0.5,
+          b: Math.random() - 0.5,
+          c: Math.random() - 0.5,
+          d: Math.random() - 0.5,
+          e: Math.random() - 0.5,
+        },
+    prob: 0,
+  }
+
+  return newGame
 }

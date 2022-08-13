@@ -1,13 +1,29 @@
 import React, { useState, useEffect } from 'react'
-import { checkCollision, createStage, LEFT, RIGHT, DOWN, UP } from '../helpers'
+import {
+  checkCollision,
+  createStage,
+  LEFT,
+  RIGHT,
+  DOWN,
+  UP,
+  POPSIZE,
+  pickOne,
+  createGames,
+  GAME_DROP_TIME,
+  AI_DROP_TIME,
+  crossover,
+  mutation,
+  createGame,
+} from '../helpers'
 //Custom Hooks
 import { useInterval } from '../hooks/useInterval'
 import { usePlayer } from '../hooks/usePlayer'
 import { useStage } from '../hooks/useStage'
-//Components
+
 import Stage from './Stage'
 import Display from './Display'
 import Button from './Button'
+import DisplayData from './DisplayData'
 //Styled Components
 import { ButtonsWrapper } from './Button'
 import {
@@ -39,32 +55,137 @@ const Tetris = () => {
     holdPiece,
     updatePlayerPiece,
     bestPlayer,
-  ] = usePlayer(weights)
+  ] = usePlayer(weights, setGameOver)
 
+  const [gameScore, setGameScore] = useState(0)
   const [stage, setStage, rowsCleared, dropPosition] = useStage(
     player,
     resetPlayer,
     bestPlayer,
-    ai
+    ai,
+    setGameScore
   )
 
   const [nextStage, setNextStage] = useState(createStage(4, 4))
   const [holdStage, setHoldStage] = useState(createStage(4, 4))
   const [spacePressed, setSpacePressed] = useState(false)
 
+  const [aiTrain, setAITrain] = useState(false)
+  const [moves, setMoves] = useState(0)
+  const [gameNum, setGameNum] = useState(1)
+  const [maxLines, setMaxLines] = useState(0)
+  const [maxFitness, setMaxFitness] = useState(0)
+  const [generation, setGeneration] = useState(1)
+  const [bestWeights, setBestWeights] = useState({
+    a: 0,
+    b: 0,
+    c: 0,
+    d: 0,
+    e: 0,
+  })
+  const [games, setGames] = useState(createGames())
+
+  const genetic_algorithm = () => {
+    if (games !== undefined) {
+      const newPopulation = games.map((obj, idx) => {
+        if (idx === gameNum - 1) {
+          return { ...obj, lines: rows, fitness: gameScore }
+        }
+        return obj
+      })
+      setGames(newPopulation)
+      if (gameOver === true) {
+        setMoves(0)
+        setGameNum((prev) => prev + +1)
+        startGame(games[gameNum])
+      }
+
+      if (gameNum === POPSIZE) {
+        //Sort games by fitness
+        let gamesCopy = newPopulation.map((a) => {
+          return { ...a }
+        })
+        gamesCopy.sort(function (a, b) {
+          return b.fitness - a.fitness
+        })
+        evaluate(gamesCopy)
+        let population = selection(gamesCopy)
+        setGames(population)
+        setGameNum(1)
+        setGeneration((prev) => prev + 1)
+        startGame(population[0])
+      }
+    }
+  }
+  const selection = function (population) {
+    var newGames = []
+    for (var i = 0; i < population.length / 2; i++) {
+      var parentA = pickOne(population)
+      var parentB = pickOne(population)
+      // Creates child by using crossover function
+      var child = crossover(parentB.dna, parentA, parentB)
+      child = mutation(child)
+      newGames[i] = createGame(child)
+    }
+    let gamesCopy = population.map((a) => {
+      return { ...a }
+    })
+    gamesCopy.splice(gamesCopy.length / 2) //Remove weaker half of population
+    gamesCopy = gamesCopy.concat(newGames)
+    return gamesCopy
+  }
+
+  const evaluate = function (population) {
+    setMaxFitness(population[0].fitness)
+    setMaxLines(population[0].lines)
+    setBestWeights(Object.assign({}, population[0].dna))
+
+    let sum_of_scores = 0
+    for (let i = 0; i < POPSIZE; i++) {
+      sum_of_scores += population[i].fitness
+    }
+
+    for (let i = 0; i < POPSIZE; i++) {
+      population[i].prob = population[i].fitness / sum_of_scores
+    }
+  }
+  useEffect(() => {
+    if (aiTrain) {
+      genetic_algorithm()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameOver])
+
+  const trainAI = () => {
+    startGame(games[0])
+    genetic_algorithm()
+    setAITrain(true)
+  }
+
   const setUpGame = () => {
     setStage(createStage())
     setNextStage(createStage(4, 4))
-    setDropTime(1000)
     setGameOver(false)
+    setGameScore(0)
     setRows(0)
   }
-  const startGame = () => {
-    setUpGame()
-    resetPlayer()
+  const startGame = (game) => {
+    if (game === undefined || game.type === 'click') {
+      setUpGame()
+      setDropTime(GAME_DROP_TIME)
+      setAI(false)
+      resetPlayer()
+    } else {
+      setUpGame()
+      setAI(true)
+      setWeights(Object.assign({}, game.dna))
+      setDropTime(AI_DROP_TIME)
+      resetPlayer(stage, true)
+    }
   }
   const startAI = () => {
     setUpGame()
+    setDropTime(AI_DROP_TIME)
     setAI(true)
     setWeights({
       a: 0.012986105043601821,
@@ -75,13 +196,14 @@ const Tetris = () => {
     })
     resetPlayer(stage, true)
   }
-
   const updateSideStage = (prevHoldStage, piece) => {
     const newStage = prevHoldStage.map((row) => row.map((cell) => [0, 'clear']))
     piece.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value !== 0) {
-          newStage[y][x] = [value]
+          if (newStage !== undefined) {
+            newStage[y][x] = [value]
+          }
         }
       })
     })
@@ -99,6 +221,25 @@ const Tetris = () => {
   useEffect(() => {
     if (rowsCleared > 0) {
       setRows((prev) => prev + rowsCleared)
+      let game_score = 0
+      switch (rowsCleared) {
+        case 1:
+          game_score += 1
+          break
+        case 2:
+          game_score += 3
+          break
+        case 3:
+          game_score += 6
+          break
+        case 4:
+          game_score += 12
+          break
+        default:
+          game_score = 0
+      }
+
+      setGameScore((prev) => prev + game_score)
     }
   }, [rowsCleared])
 
@@ -117,16 +258,18 @@ const Tetris = () => {
         console.log('GAME OVER!!!')
         setGameOver(true)
         setDropTime(null)
+      } else {
+        setMoves((prev) => prev + 1)
+        updatePlayerPos({ x: 0, y: 0, collided: true })
       }
-      updatePlayerPos({ x: 0, y: 0, collided: true })
     }
   }
 
   const keyUp = ({ keyCode }) => {
     if (!gameOver) {
-      if (keyCode === 40) {
+      if (keyCode === DOWN) {
         // When user releases DOWN key turn on interval
-        setDropTime(1000)
+        setDropTime(GAME_DROP_TIME)
       }
       if (keyCode === 32) {
         setSpacePressed(false)
@@ -195,7 +338,24 @@ const Tetris = () => {
             <Display gameOver={gameOver} text='Game Over' />
           ) : (
             <div>
-              <Display text={`Lines: ${rows}`} />
+              {!ai ? (
+                <Display text={`Lines: ${rows}`} />
+              ) : (
+                <DisplayData
+                  data={{
+                    rows,
+                    gameScore,
+                    generation,
+                    maxFitness,
+                    maxLines,
+                    gameNum,
+                    moves,
+                    POPSIZE,
+                    bestWeights,
+                    weights,
+                  }}
+                ></DisplayData>
+              )}
             </div>
           )}
         </div>
@@ -204,7 +364,7 @@ const Tetris = () => {
         <Button type={'Play'} size={'large'} callback={startGame} />
       </ButtonsWrapper>
       <ButtonsWrapper>
-        <Button type={'Train AI'} />
+        <Button type={'Train AI'} callback={trainAI} />
         <Button type={'AI Play'} callback={startAI} />
       </ButtonsWrapper>
     </StyledTetrisWrapper>
