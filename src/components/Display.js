@@ -1,16 +1,20 @@
 import React from 'react'
 import { StyledDisplay, StyledDisplayData } from './styles/StyledDisplay'
+import {
+  AiOutlineArrowDown,
+  AiOutlineArrowLeft,
+  AiOutlineArrowRight,
+  AiOutlineArrowUp,
+} from 'react-icons/ai'
 export const Display = ({ gameOver, text }) => {
   return <StyledDisplay gameOver={gameOver}>{text}</StyledDisplay>
 }
 
 export const DisplayData = ({ data }) => {
   return (
-    <StyledDisplayData>
+    <StyledDisplayData fontSize='16px'>
       <h2>Statistics</h2>
-      <div>
-        Lines: <span>{data.rows}</span>
-      </div>
+      <div>Lines: {data.rows}</div>
       <div>Game Score: {data.gameScore}</div>
       <div>Game Number: {data.gameNum}</div>
       <div>Generation: {data.generation}</div>
@@ -37,3 +41,31 @@ export const DisplayData = ({ data }) => {
   )
 }
 
+export const DisplayControls = () => {
+  return (
+    <StyledDisplayData fontSize='16px' controls={true}>
+      <h2>Controls</h2>
+      <div>
+        move left: <AiOutlineArrowLeft />
+      </div>
+      <div>
+        move right: <AiOutlineArrowRight />
+      </div>
+      <div>
+        rotate right: <AiOutlineArrowUp />
+      </div>
+      <div>
+        rotate left: <span>z</span>
+      </div>
+      <div>
+        hold: <span>c</span>
+      </div>
+      <div>
+        soft drop: <AiOutlineArrowDown />
+      </div>
+      <div>
+        hard drop: <span>space</span>
+      </div>
+    </StyledDisplayData>
+  )
+}

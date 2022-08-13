@@ -11,7 +11,6 @@ export const StyledStage = styled.div`
         ${(props) => props.width}
     )
   );
-  /* border: 4px solid #303942; */
   grid-template-columns: repeat(${(props) => props.width}, 1fr);
   grid-gap: 1px;
   width: ${(props) => (props.type === 'main' ? '240px' : '96px')};

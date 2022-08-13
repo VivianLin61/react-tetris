@@ -21,7 +21,7 @@ import { usePlayer } from '../hooks/usePlayer'
 import { useStage } from '../hooks/useStage'
 
 import Stage from './Stage'
-import { Display, DisplayData } from './Display'
+import { Display, DisplayData, DisplayControls } from './Display'
 import Button from './Button'
 import { VscDebugRestart, VscDebugPause } from 'react-icons/vsc'
 //Styled Components
@@ -278,7 +278,6 @@ const Tetris = () => {
 
   const pausePlayer = () => {
     setPaused((prev) => !prev)
-    //toggle
   }
   useEffect(() => {
     if (paused) {
@@ -309,6 +308,8 @@ const Tetris = () => {
         dropPlayer()
       } else if (e.keyCode === UP) {
         setPlayer(playerRotate(player, stage, 1)) //Rotate the player on the stage clockwise
+      } else if (e.keyCode === 90) {
+        setPlayer(playerRotate(player, stage, -1)) //Rotate the player on the stage counterclockwise
       } else if (e.keyCode === 32) {
         e.preventDefault()
         if (spacePressed === false) {
@@ -368,24 +369,25 @@ const Tetris = () => {
         <SideWrapper>
           <StyledText>NEXT</StyledText>
           <Stage stage={nextStage} />
-          {!ai && (
-            <>
-              <ButtonsWrapper position='left'>
-                <IconButton type={'Play'} callback={trainAI}>
-                  <VscDebugRestart />
-                </IconButton>
-                <IconButton type={'AI Play'} callback={startAI}>
-                  <VscDebugPause />
-                </IconButton>
-              </ButtonsWrapper>
-            </>
-          )}
+          <>
+            <ButtonsWrapper position='left'>
+              <IconButton onClick={startGame}>
+                <VscDebugRestart />
+              </IconButton>
+              <IconButton onClick={pausePlayer}>
+                <VscDebugPause />
+              </IconButton>
+            </ButtonsWrapper>
+          </>
           <>
             {gameOver && !ai ? (
               <Display gameOver={gameOver} text='Game Over' />
             ) : (
-              <div>{!ai ? <Display text={`Lines: ${rows}`} /> : <></>}</div>
+              <div>
+                <Display text={`Lines: ${rows}`} />
+              </div>
             )}
+            <DisplayControls></DisplayControls>
           </>
         </SideWrapper>
       </StyledTetris>

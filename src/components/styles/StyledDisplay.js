@@ -4,29 +4,33 @@ export const StyledDisplay = styled.div`
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  margin: 20px 0px 20px 20px;
+  margin: 10px 0px 20px 20px;
   padding: 16px;
   min-height: 30px;
-  width: 240px;
   border-radius: 10px;
-  color: ${(props) => (props.gameOver ? 'red' : 'white')};
+  width: 260px;
+  color: ${(props) => (props.gameOver ? '#CF5561' : 'white')};
   background: ${(props) => props.theme.primaryColor};
-  font-size: 0.8rem;
+  font-size: 18px;
 `
 export const StyledDisplayData = styled.div`
-  box-sizing: border-box;
-  justify-content: flex-start;
   margin: 20px 20px 20px 20px;
   padding: 16px;
   min-height: 30px;
   border-radius: 10px;
-  color: ${(props) => (props.gameOver ? 'red' : 'white')};
+  color: white;
   background: ${(props) => props.theme.primaryColor};
-  font-size: 0.8rem;
+  font-size: ${(props) => props.fontSize};
   h2 {
     margin: 5px 0px 5px 0px;
   }
   div {
     padding-bottom: 2px;
+    display: ${(props) => (props.controls ? 'flex' : 'block')};
+    align-items: center;
+    svg,
+    span {
+      margin-left: 10px;
+    }
   }
 `
