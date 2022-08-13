@@ -77,7 +77,6 @@ export const useStage = (player, resetPlayer, ai) => {
       }
       return newStage
     }
-
     setStage((prev) => updateStage(prev))
   }, [
     ai,

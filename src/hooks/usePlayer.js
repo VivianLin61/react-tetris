@@ -73,7 +73,7 @@ export const usePlayer = (weights, setGameOver) => {
       //Draw merged block on cloned stage
       let clonedDropPosition = calculateDropPosition(clonedStage, clonedPlayer)
       const drop = clonedDropPosition - clonedPlayer.pos.y
-
+      clonedPlayer.collided = true
       if (!checkCollision(clonedPlayer, clonedStage, { x: 0, y: drop })) {
         clonedPlayer.tetromino.forEach((row, y) => {
           row.forEach((value, x) => {
@@ -264,7 +264,6 @@ export const usePlayer = (weights, setGameOver) => {
         for (let i = 0; i < rotation; i++) {
           newPlayer = playerRotate(newPlayer, stage, 1)
         }
-
         newPlayer.pos.x = move.translation
       } else {
         newPlayer.pos.x = STAGE_WIDTH / 2 - 1

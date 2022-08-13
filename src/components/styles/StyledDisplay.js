@@ -9,7 +9,7 @@ export const StyledDisplay = styled.div`
   min-height: 30px;
   border-radius: 10px;
   width: 260px;
-  color: ${(props) => (props.gameOver ? '#CF5561' : 'white')};
+  color: white;
   background: ${(props) => props.theme.primaryColor};
   font-size: 18px;
 `

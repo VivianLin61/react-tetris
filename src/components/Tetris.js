@@ -173,6 +173,7 @@ const Tetris = () => {
       setUpGame()
       setDropTime(GAME_DROP_TIME)
       setAI(false)
+      setAITrain(false)
       resetPlayer()
     } else {
       setUpGame()
@@ -257,10 +258,9 @@ const Tetris = () => {
         console.log('GAME OVER!!!')
         setGameOver(true)
         setDropTime(null)
-      } else {
-        setMoves((prev) => prev + 1)
-        updatePlayerPos({ x: 0, y: 0, collided: true })
       }
+      setMoves((prev) => prev + 1)
+      updatePlayerPos({ x: 0, y: 0, collided: true })
     }
   }
 
@@ -365,7 +365,12 @@ const Tetris = () => {
             </>
           )}
         </SideWrapper>
-        <Stage stage={stage} type={'main'} />
+        <Stage
+          gameOver={gameOver}
+          paused={paused}
+          stage={stage}
+          type={'main'}
+        />
         <SideWrapper>
           <StyledText>NEXT</StyledText>
           <Stage stage={nextStage} />
@@ -380,13 +385,7 @@ const Tetris = () => {
             </ButtonsWrapper>
           </>
           <>
-            {gameOver && !ai ? (
-              <Display gameOver={gameOver} text='Game Over' />
-            ) : (
-              <div>
-                <Display text={`Lines: ${rows}`} />
-              </div>
-            )}
+            <Display text={`Lines: ${rows}`} />
             <DisplayControls></DisplayControls>
           </>
         </SideWrapper>

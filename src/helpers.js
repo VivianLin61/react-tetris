@@ -5,8 +5,8 @@ export const RIGHT = 39
 export const DOWN = 40
 export const UP = 38
 export const POPSIZE = 50
-export const GAME_DROP_TIME = 1000
-export const AI_DROP_TIME = 25
+export const GAME_DROP_TIME = 500
+export const AI_DROP_TIME = 1
 export const createStage = (height, width) =>
   Array.from(Array(height ? height : STAGE_HEIGHT), () =>
     new Array(width ? width : STAGE_WIDTH).fill([0, 'clear'])
