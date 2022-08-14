@@ -267,7 +267,7 @@ const Tetris = () => {
   }
 
   const keyUp = ({ keyCode }) => {
-    if (!gameOver) {
+    if (!ai && !gameOver) {
       if (keyCode === DOWN) {
         // When user releases DOWN key turn on interval
         setDropTime(GAME_DROP_TIME)
