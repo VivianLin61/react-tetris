@@ -5,7 +5,7 @@ export const ButtonsWrapper = styled.div`
   display: flex;
   justify-content: ${(props) => props.position};
 `
-export const IconButton = styled.div`
+export const IconButton = styled.button`
   display: flex;
   align-items: center;
   margin: 0 0px 16px 20px;
@@ -19,6 +19,11 @@ export const IconButton = styled.div`
   cursor: pointer;
   color: ${(props) => props.theme.textColor};
   font-family: 'Montserrat', sans-serif;
+  transition: background-color 300ms ease-out 100ms;
+  &:hover {
+    background: ${(props) => props.theme.textColor};
+    color: ${(props) => props.theme.primaryColor};
+  }
 `
 const StyledButton = styled.button`
   box-sizing: border-box;
@@ -35,6 +40,11 @@ const StyledButton = styled.button`
   cursor: pointer;
   color: ${(props) => props.theme.textColor};
   font-family: 'Montserrat', sans-serif;
+  transition: background-color 100ms ease-out 100ms;
+  &:hover {
+    background: ${(props) => props.theme.textColor};
+    color: ${(props) => props.theme.primaryColor};
+  }
 `
 
 const Button = ({ callback, type, size }) => (
