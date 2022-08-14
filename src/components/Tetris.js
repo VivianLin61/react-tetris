@@ -187,6 +187,7 @@ const Tetris = () => {
     setUpGame()
     setDropTime(AI_DROP_TIME)
     setAI(true)
+    setAITrain(false)
     setWeights({
       a: 0.050887509722059514,
       b: -0.21856984049798933,
@@ -349,20 +350,30 @@ const Tetris = () => {
             </>
           ) : (
             <>
-              <DisplayData
-                data={{
-                  rows,
-                  gameScore,
-                  generation,
-                  maxFitness,
-                  maxLines,
-                  gameNum,
-                  moves,
-                  POPSIZE,
-                  bestWeights,
-                  weights,
-                }}
-              ></DisplayData>
+              {aiTrain ? (
+                <DisplayData
+                  data={{
+                    rows,
+                    gameScore,
+                    generation,
+                    maxFitness,
+                    maxLines,
+                    gameNum,
+                    moves,
+                    bestWeights,
+                    weights,
+                  }}
+                ></DisplayData>
+              ) : (
+                <DisplayData
+                  data={{
+                    rows,
+                    gameScore,
+                    moves,
+                    weights,
+                  }}
+                ></DisplayData>
+              )}
             </>
           )}
         </SideWrapper>
@@ -396,7 +407,7 @@ const Tetris = () => {
       </ButtonsWrapper>
       <ButtonsWrapper position={'center'}>
         <Button type={'Train AI'} callback={trainAI} />
-        <Button type={'AI Play'} callback={startAI} />
+        <Button type={'Run AI'} callback={startAI} />
       </ButtonsWrapper>
     </StyledTetrisWrapper>
   )

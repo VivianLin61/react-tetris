@@ -16,19 +16,25 @@ export const DisplayData = ({ data }) => {
       <h2>Statistics</h2>
       <div>Lines: {data.rows}</div>
       <div>Game Score: {data.gameScore}</div>
-      <div>Game Number: {data.gameNum}</div>
-      <div>Generation: {data.generation}</div>
-      <div>Max Fitness: {data.maxFitness}</div>
-      <div>Max Lines: {data.maxLines}</div>
       <div>Moves: {data.moves}</div>
-      <div>
-        Best Weights:
-        <div>a: {data.bestWeights.a}</div>
-        <div>b: {data.bestWeights.b}</div>
-        <div>c: {data.bestWeights.c}</div>
-        <div>d: {data.bestWeights.d}</div>
-        <div>e: {data.bestWeights.e}</div>
-      </div>
+      {data.gameNum && (
+        <>
+          <div>Game Number: {data.gameNum}</div>
+          <div>Generation: {data.generation}</div>
+          <div>Max Fitness: {data.maxFitness}</div>
+          <div>Max Lines: {data.maxLines}</div>
+        </>
+      )}
+      {data.bestWeights && (
+        <div>
+          Best Weights:
+          <div>a: {data.bestWeights.a}</div>
+          <div>b: {data.bestWeights.b}</div>
+          <div>c: {data.bestWeights.c}</div>
+          <div>d: {data.bestWeights.d}</div>
+          <div>e: {data.bestWeights.e}</div>
+        </div>
+      )}
       <div>
         Current Weights:
         <div>a: {data.weights.a}</div>
