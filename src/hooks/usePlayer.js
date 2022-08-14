@@ -256,6 +256,7 @@ export const usePlayer = (weights, setGameOver) => {
         collided: false,
       }
 
+      setPlayer(newPlayer)
       if (ai) {
         let move = decisionFunction(stage, newPlayer) //find best move for newplayer
         if (!move) return

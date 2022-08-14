@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { createStage } from '../helpers'
+import { createStage, checkCollision } from '../helpers'
 import { calculateDropPosition, STAGE_HEIGHT, STAGE_WIDTH } from '../helpers'
 export const useStage = (player, resetPlayer, ai) => {
   const [stage, setStage] = useState(createStage())
@@ -49,6 +49,11 @@ export const useStage = (player, resetPlayer, ai) => {
           })
         })
         //Draw the tetromino
+        let status = 'clear'
+        if (checkCollision(player, newStage, { x: 0, y: 1 })) {
+          //collision on next down
+          status = 'merged'
+        }
         player.tetromino.forEach((row, y) => {
           row.forEach((value, x) => {
             if (value !== 0 && newStage !== undefined && player !== undefined) {
@@ -60,10 +65,7 @@ export const useStage = (player, resetPlayer, ai) => {
                 xVal >= 0 &&
                 xVal < STAGE_WIDTH
               ) {
-                newStage[y + player.pos.y][x + player.pos.x] = [
-                  value,
-                  `${player.collided ? 'merged' : 'clear'}`,
-                ]
+                newStage[y + player.pos.y][x + player.pos.x] = [value, status]
               }
             }
           })

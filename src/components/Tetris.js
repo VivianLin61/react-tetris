@@ -249,9 +249,10 @@ const Tetris = () => {
     }
   }
 
-  const drop = () => {
-    if (!checkCollision(player, stage, { x: 0, y: 1 })) {
-      updatePlayerPos({ x: 0, y: 1, collided: false })
+  const drop = (height) => {
+    let dropHeight = height ? height : 1
+    if (!checkCollision(player, stage, { x: 0, y: dropHeight })) {
+      updatePlayerPos({ x: 0, y: dropHeight, collided: false })
     } else {
       // Game Over
       if (player.pos.y < 1) {
@@ -296,6 +297,7 @@ const Tetris = () => {
   const hardDrop = () => {
     const dropHeight = dropPosition - player.pos.y
     updatePlayerPos({ x: 0, y: dropHeight, collided: true })
+    // drop(dropHeight)
   }
 
   const move = (e) => {
