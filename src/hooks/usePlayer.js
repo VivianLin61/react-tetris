@@ -1,6 +1,6 @@
 /* eslint-disable no-loop-func */
 import { useState, useCallback } from 'react'
-import { TETROMINOS, randomTetromino } from '../tetrominos'
+import { TETROMINOS } from '../tetrominos'
 import {
   checkCollision,
   calculateDropPosition,
@@ -10,7 +10,7 @@ import {
   rotate,
 } from '../helpers'
 
-export const usePlayer = (weights, setGameOver) => {
+export const usePlayer = (weights, setGameOver, setBag, bag) => {
   const [player, setPlayer] = useState({
     pos: { x: 0, y: 0 },
     tetromino: TETROMINOS[0].shape,
@@ -242,6 +242,16 @@ export const usePlayer = (weights, setGameOver) => {
     } else {
       resetPlayer()
     }
+  }
+
+  const randomTetromino = () => {
+    let newBag = bag.length !== 0 ? bag : ['I', 'J', 'L', 'O', 'S', 'T', 'Z']
+    //choose random from bag
+    const r = Math.floor(Math.random() * newBag.length)
+    const randTetromino = newBag[r]
+    newBag = newBag.filter((item) => item !== randTetromino)
+    setBag(newBag)
+    return TETROMINOS[randTetromino]
   }
 
   //Generate new tetromino at the top of the stage

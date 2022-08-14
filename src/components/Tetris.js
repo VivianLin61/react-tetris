@@ -19,7 +19,6 @@ import {
 import { useInterval } from '../hooks/useInterval'
 import { usePlayer } from '../hooks/usePlayer'
 import { useStage } from '../hooks/useStage'
-
 import Stage from './Stage'
 import { Display, DisplayData, DisplayControls } from './Display'
 import Button from './Button'
@@ -46,6 +45,8 @@ const Tetris = () => {
     d: 0,
     e: 0,
   })
+
+  const [bag, setBag] = useState(['I', 'J', 'L', 'O', 'S', 'T', 'Z'])
   const [
     player,
     setPlayer,
@@ -55,7 +56,7 @@ const Tetris = () => {
     nextPiece,
     holdPiece,
     updatePlayerPiece,
-  ] = usePlayer(weights, setGameOver)
+  ] = usePlayer(weights, setGameOver, setBag, bag)
 
   const [gameScore, setGameScore] = useState(0)
   const [stage, setStage, rowsCleared, dropPosition] = useStage(
@@ -83,7 +84,6 @@ const Tetris = () => {
     e: 0,
   })
   const [games, setGames] = useState(createGames())
-
   const genetic_algorithm = () => {
     if (games !== undefined) {
       const newPopulation = games.map((obj, idx) => {
@@ -174,7 +174,7 @@ const Tetris = () => {
       setDropTime(GAME_DROP_TIME)
       setAI(false)
       setAITrain(false)
-      resetPlayer()
+      resetPlayer(stage, false)
     } else {
       setUpGame()
       setAI(true)
@@ -188,11 +188,11 @@ const Tetris = () => {
     setDropTime(AI_DROP_TIME)
     setAI(true)
     setWeights({
-      a: 0.012986105043601821,
-      b: -0.33099889329580323,
-      c: 0.5446471620000896,
-      d: -0.25120763453283845,
-      e: -0.13253702980064244,
+      a: 0.050887509722059514,
+      b: -0.21856984049798933,
+      c: 0.42879479935140535,
+      d: -0.1677641777947362,
+      e: -0.07663281842432595,
     })
     resetPlayer(stage, true)
   }
@@ -297,11 +297,10 @@ const Tetris = () => {
   const hardDrop = () => {
     const dropHeight = dropPosition - player.pos.y
     updatePlayerPos({ x: 0, y: dropHeight, collided: true })
-    // drop(dropHeight)
   }
 
   const move = (e) => {
-    if (!gameOver) {
+    if (!ai && !gameOver) {
       if (e.keyCode === LEFT) {
         movePlayer(-1)
       } else if (e.keyCode === RIGHT) {
