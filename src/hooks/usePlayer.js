@@ -10,7 +10,7 @@ import {
   rotate,
 } from '../helpers'
 
-export const usePlayer = (weights, setGameOver, setBag, bag) => {
+export const usePlayer = (weights, setGameOver, setBag, bag, setMoves) => {
   const [player, setPlayer] = useState({
     pos: { x: 0, y: 0 },
     tetromino: TETROMINOS[0].shape,
@@ -265,8 +265,6 @@ export const usePlayer = (weights, setGameOver, setBag, bag) => {
         tetromino: tetromino,
         collided: false,
       }
-
-      setPlayer(newPlayer)
       if (ai) {
         let move = decisionFunction(stage, newPlayer) //find best move for newplayer
         if (!move) return
@@ -279,6 +277,7 @@ export const usePlayer = (weights, setGameOver, setBag, bag) => {
       } else {
         newPlayer.pos.x = STAGE_WIDTH / 2 - 1
       }
+      setMoves((prev) => prev + 1)
       setPlayer(newPlayer)
       setNextPiece([randomTetromino().shape])
     },

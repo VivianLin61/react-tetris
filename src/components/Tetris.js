@@ -47,6 +47,7 @@ const Tetris = () => {
   })
 
   const [bag, setBag] = useState(['I', 'J', 'L', 'O', 'S', 'T', 'Z'])
+  const [moves, setMoves] = useState(0)
   const [
     player,
     setPlayer,
@@ -56,7 +57,7 @@ const Tetris = () => {
     nextPiece,
     holdPiece,
     updatePlayerPiece,
-  ] = usePlayer(weights, setGameOver, setBag, bag)
+  ] = usePlayer(weights, setGameOver, setBag, bag, setMoves)
 
   const [gameScore, setGameScore] = useState(0)
   const [stage, setStage, rowsCleared, dropPosition] = useStage(
@@ -71,7 +72,6 @@ const Tetris = () => {
   const [spacePressed, setSpacePressed] = useState(false)
   const [paused, setPaused] = useState(false)
   const [aiTrain, setAITrain] = useState(false)
-  const [moves, setMoves] = useState(0)
   const [gameNum, setGameNum] = useState(1)
   const [maxLines, setMaxLines] = useState(0)
   const [maxFitness, setMaxFitness] = useState(0)
@@ -157,8 +157,27 @@ const Tetris = () => {
 
   const trainAI = () => {
     startGame(games[0])
-    genetic_algorithm()
     setAITrain(true)
+    setMaxLines(0)
+    setMaxFitness(0)
+    setGames(createGames())
+    setGameNum(0)
+    setGeneration(1)
+    setWeights({
+      a: 0,
+      b: 0,
+      c: 0,
+      d: 0,
+      e: 0,
+    })
+    setBestWeights({
+      a: 0,
+      b: 0,
+      c: 0,
+      d: 0,
+      e: 0,
+    })
+    genetic_algorithm()
   }
 
   const setUpGame = () => {
@@ -167,16 +186,16 @@ const Tetris = () => {
     setGameOver(false)
     setGameScore(0)
     setRows(0)
+    setMoves(0)
   }
   const startGame = (game) => {
+    setUpGame()
     if (game === undefined || game.type === 'click') {
-      setUpGame()
       setDropTime(GAME_DROP_TIME)
       setAI(false)
       setAITrain(false)
       resetPlayer(stage, false)
     } else {
-      setUpGame()
       setAI(true)
       setWeights(Object.assign({}, game.dna))
       setDropTime(AI_DROP_TIME)
@@ -189,11 +208,11 @@ const Tetris = () => {
     setAI(true)
     setAITrain(false)
     setWeights({
-      a: 0.050887509722059514,
-      b: -0.21856984049798933,
-      c: 0.42879479935140535,
-      d: -0.1677641777947362,
-      e: -0.07663281842432595,
+      a: -0.010111521003305701,
+      b: -0.2245709387616145,
+      c: 0.20460886883351714,
+      d: -0.16724897115417586,
+      e: -0.3344353099663525,
     })
     resetPlayer(stage, true)
   }
@@ -257,11 +276,10 @@ const Tetris = () => {
     } else {
       // Game Over
       if (player.pos.y < 1) {
-        console.log('GAME OVER!!!')
         setGameOver(true)
         setDropTime(null)
       }
-      setMoves((prev) => prev + 1)
+
       updatePlayerPos({ x: 0, y: 0, collided: true })
     }
   }
