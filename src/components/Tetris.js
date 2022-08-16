@@ -161,7 +161,7 @@ const Tetris = () => {
     setMaxLines(0)
     setMaxFitness(0)
     setGames(createGames())
-    setGameNum(0)
+    setGameNum(1)
     setGeneration(1)
     setWeights({
       a: 0,
@@ -208,11 +208,11 @@ const Tetris = () => {
     setAI(true)
     setAITrain(false)
     setWeights({
-      a: -0.010111521003305701,
-      b: -0.2245709387616145,
-      c: 0.20460886883351714,
-      d: -0.16724897115417586,
-      e: -0.3344353099663525,
+      a: -0.06439675044866619,
+      b: -0.2301469027281215,
+      c: 0.20044015404082952,
+      d: -0.1549333036691808,
+      e: -0.2602333697359142,
     })
     resetPlayer(stage, true)
   }
@@ -319,6 +319,7 @@ const Tetris = () => {
   }
 
   const move = (e) => {
+    e.preventDefault()
     if (!ai && !gameOver) {
       if (e.keyCode === LEFT) {
         movePlayer(-1)
